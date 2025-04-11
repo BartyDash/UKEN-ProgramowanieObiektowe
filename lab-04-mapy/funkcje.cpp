@@ -7,8 +7,7 @@
 #include <iomanip>
 #include <iostream>
 #include <random>
-#include <sstream>
-#include <string>
+#include <sstream>#include <string>
 
 using namespace std;
 
@@ -86,26 +85,57 @@ void tworz_oceny(const vector<int>& pesele, ostream& strumien) {
 
 map<int, Student> wczytaj_studentow(istream& strumien) {
     map<int, Student> studenci;
+    string imie, nazwisko;
     int pesel;
-    Student student;
+
+	while (strumien >> imie >> nazwisko >> pesel) {
+		Student student;
+		student.imie = imie;
+		student.nazwisko = nazwisko;
+		studenci[pesel] = student;
+	}
 
     return studenci;
 }
 
-void wczytaj_oceny(istream& strumień, map<int, Student>* studenci) {
+void wczytaj_oceny(istream& strumien, map<int, Student>* studenci) {
     string line;
-    while (getline(strumień, line)) {
+    while (getline(strumien, line)) {
         int pesel;
         string przedmiot;
         double ocena;
-        stringstream ss;
+        stringstream ss(line);
+
+        if (ss >> pesel >> przedmiot) {
+            vector<double> oceny;
+
+            while (ss >> ocena) {
+                oceny.push_back(ocena);
+            }
+
+            if (studenci->count(pesel)) {
+				(*studenci)[pesel].oceny_z_przedmiotow[przedmiot] = oceny;
+            }
+        }
 
     }
 }
 
 string wyznacz_najpopularniejsze_imie(const map<int, Student>& studenci) {
     map<string, int> czestosc_imion;
+
+	for (const auto& [pesel, student] : studenci) {
+		czestosc_imion[student.imie]++;
+	}
+
     string najpopularniejsze_imie;
+    int max_czestosc = 0;
+	for (const auto& [imie, czestosc] : czestosc_imion) {
+		if (czestosc > max_czestosc) {
+			max_czestosc = czestosc;
+			najpopularniejsze_imie = imie;
+		}
+	}
 
     return najpopularniejsze_imie;
 }
@@ -113,17 +143,43 @@ string wyznacz_najpopularniejsze_imie(const map<int, Student>& studenci) {
 pair<string, int> wyznacz_najpopularniejsze_nazwisko(const map<int, Student>& studenci) {
     map<string, int> czestosc_nazwisk;
 
-    string najpopularniejsze_nazwisko;
-    int max_częstość{0};
+    for (const auto& [pesel, student] : studenci) {
+        czestosc_nazwisk[student.nazwisko]++;
+    }
 
-    return {najpopularniejsze_nazwisko, max_częstość};
+    string najpopularniejsze_nazwisko;
+    int max_częstosc{0};
+    for (const auto& [nazwisko, czestosc] : czestosc_nazwisk) {
+        if (czestosc > max_częstosc) {
+            max_częstosc = czestosc;
+            najpopularniejsze_nazwisko = nazwisko;
+        }
+    }
+
+    return {najpopularniejsze_nazwisko, max_częstosc};
 }
 
-void wypisz_studentow_z_ocenami(const map<int, Student>& studenci, ostream& strumień) {
+void wypisz_studentow_z_ocenami(const map<int, Student>& studenci, ostream& strumien) {
+
+	for (const auto& [pesel, student] : studenci) {
+        strumien << student.imie << " " << student.nazwisko << " (" << pesel << ")\n";
+		for (const auto& [przedmiot, oceny] : student.oceny_z_przedmiotow) {
+			strumien << "\t" << przedmiot << "\t";
+			for (const auto& ocena : oceny) {
+				strumien << ocena << " ";
+			}
+			strumien << endl;
+		}
+	}
 }
 
 int policz_studentow_bez_ocen(const map<int, Student>& studenci) {
     int ilu_bez_ocen{0};
+	for (const auto& [pesel, student] : studenci) {
+		if (student.oceny_z_przedmiotow.empty()) {
+            ilu_bez_ocen++;
+		}
+	}
 
     return ilu_bez_ocen;
 }
