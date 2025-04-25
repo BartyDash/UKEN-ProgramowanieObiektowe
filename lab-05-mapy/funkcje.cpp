@@ -1,6 +1,7 @@
 #include <fstream>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "funkcje.h"
 
