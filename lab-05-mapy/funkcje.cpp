@@ -57,9 +57,9 @@ vector<PunktySlowa> stworz_wektor(const map<string, int> &licznik_slow)
 
 void posortuj_wg_punktow_malejaco(vector<PunktySlowa> *punkty_slow)
 {
-	sort(punkty_slow->begin(), punkty_slow->end(),
+	sort(punkty_slow->rbegin(), punkty_slow->rend(),
 		[](const PunktySlowa& a, const PunktySlowa& b) {
-			return a.punkty > b.punkty;
+			return a.punkty < b.punkty;
 		});
 }
 
@@ -67,6 +67,6 @@ void wypisz_slowa_i_punkty(const vector<PunktySlowa> &punkty_slow, ostream &stru
 {
 	for (const auto &ps : punkty_slow)
 	{
-		strumien << ps.slowo << " " << ps.punkty << endl;
+		strumien << ps.slowo << "\t" << ps.punkty << endl;
 	}
 }
