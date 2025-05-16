@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "funkcje.h"
+#include <algorithm>
 
 using namespace std;
 
@@ -47,13 +48,25 @@ void dodaj_1_jesli_poczatek_i_koniec_to_slowa(
 vector<PunktySlowa> stworz_wektor(const map<string, int> &licznik_slow)
 {
     vector<PunktySlowa> wynik;
+	for (const auto& para : licznik_slow)
+	{
+		wynik.push_back(PunktySlowa{ para.first, para.second });
+	}
     return wynik;
 }
 
 void posortuj_wg_punktow_malejaco(vector<PunktySlowa> *punkty_slow)
 {
+	sort(punkty_slow->begin(), punkty_slow->end(),
+		[](const PunktySlowa& a, const PunktySlowa& b) {
+			return a.punkty > b.punkty;
+		});
 }
 
 void wypisz_slowa_i_punkty(const vector<PunktySlowa> &punkty_slow, ostream &strumien)
 {
+	for (const auto &ps : punkty_slow)
+	{
+		strumien << ps.slowo << " " << ps.punkty << endl;
+	}
 }
